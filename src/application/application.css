@@ -1,0 +1,65 @@
+/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+.white-bg {
+	-fx-background-color: #ffff;
+}
+
+.root {
+	-fx-background-color: #fff8f0;
+}
+
+.separator {
+    -fx-border-color: transparent; /* Ensures background stays transparent */
+}
+
+
+.separator .line {
+	-fx-background-color: transparent;
+	-fx-border-color: #c2bcb9;
+	-fx-border-width: 0.5px;
+}
+
+.menu:focused,.menu:hover,.menu:selected {
+	-fx-background-color: #c2bcb9;
+}
+
+.menu-item:focused,.menu-item:hover{
+ 	-fx-background-color: #c2bcb9;
+ }
+.buttons {
+	-fx-background-color: #e4ddc7;
+	-fx-border-style: solid;
+	-fx-border-radius: 5%;
+	-fx-border-color: #c2bcb9;
+}
+
+.buttons:hover {
+	-fx-background-color: #d4c8a8;
+	-fx-font-weight: bold;
+	-fx-border-style: solid;
+	-fx-border-radius: 5%;
+	-fx-border-color: #c2bcb9;
+}
+
+.text-area {
+    -fx-background-color: #fff8f0; /* Matches the root background */
+    -fx-border-color: #c2bcb9; /* Matches button borders */
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-padding: 5px;
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial";
+    -fx-text-fill: #333; /* Dark gray for readability */
+}
+
+.text-area .content {
+    -fx-background-color: #fff8f0; /* Ensure text background matches root */
+}
+
+.text-area:focused {
+    -fx-border-color: #d4c8a8; /* Slightly darker border when focused */
+    -fx-background-color: #fdf4e3; /* Subtle change for better visibility */
+}
+
+.text-area:hover {
+    -fx-border-color: #a89f94; /* Slight highlight on hover */
+}
