@@ -30,6 +30,9 @@
 	-fx-border-style: solid;
 	-fx-border-radius: 5%;
 	-fx-border-color: #c2bcb9;
+	-fx-cursor: hand ;
+	-fx-font-size: 14px;
+	-fx-font-family: Arial;
 }
 
 .buttons:hover {
@@ -42,7 +45,7 @@
 
 .text-area {
     -fx-background-color: #fff8f0; /* Matches the root background */
-    -fx-border-color: #c2bcb9; /* Matches button borders */
+    -fx-border-color: #fff8f0; 
     -fx-border-width: 1px;
     -fx-border-radius: 5px;
     -fx-padding: 5px;
@@ -53,13 +56,23 @@
 
 .text-area .content {
     -fx-background-color: #fff8f0; /* Ensure text background matches root */
+    -fx-font-family: Arial;
+}
+
+.text-area .scroll-bar {
+	-fx-background-color: transparent;
+	-fx-opacity: 0.0;
+    -fx-pref-height: 0;
+    -fx-pref-width: 0;
+	
+
 }
 
 .text-area:focused {
-    -fx-border-color: #d4c8a8; /* Slightly darker border when focused */
     -fx-background-color: #fdf4e3; /* Subtle change for better visibility */
+    -fx-border-color: #fff8f0;
 }
 
-.text-area:hover {
-    -fx-border-color: #a89f94; /* Slight highlight on hover */
+.text-area:hover { 
+    -fx-border-color: #fff8f0;
 }

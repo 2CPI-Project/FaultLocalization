@@ -18,6 +18,8 @@ public class Main extends Application {
 			primaryStage.setScene(scene);
 			primaryStage.setResizable(true);
 			primaryStage.setTitle("Debugger");
+			primaryStage.setMinWidth(610);
+			primaryStage.setMinHeight(430);
 			primaryStage.show();
 		} catch(Exception e) {
 			e.printStackTrace();
