@@ -46,9 +46,9 @@
 .text-area {
     -fx-background-color: #fff8f0; /* Matches the root background */
     -fx-border-color: #fff8f0; 
-    -fx-border-width: 1px;
+    -fx-border-width: 0px;
     -fx-border-radius: 5px;
-    -fx-padding: 5px;
+    -fx-padding: 0;
     -fx-font-size: 14px;
     -fx-font-family: "Arial";
     -fx-text-fill: #333; /* Dark gray for readability */
@@ -57,6 +57,7 @@
 .text-area .content {
     -fx-background-color: #fff8f0; /* Ensure text background matches root */
     -fx-font-family: Arial;
+    -fx-padding: 0;
 }
 
 .text-area .scroll-bar {
@@ -68,10 +69,7 @@
 
 }
 
-.text-area:focused {
-    -fx-background-color: #fdf4e3; /* Subtle change for better visibility */
-    -fx-border-color: #fff8f0;
-}
+
 
 .text-area:hover { 
     -fx-border-color: #fff8f0;

@@ -1,19 +1,28 @@
 package application;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
+import java.util.Optional;
 
 public class Controller {
-
-    @FXML
+	@FXML
     private Button buttonCasTests;
 
     @FXML
@@ -31,7 +40,530 @@ public class Controller {
     @FXML
     private TextArea textAreaTcasCorrect;
 
-    // Method to handle file selection for cas-tests
+    @FXML
+    private MenuItem menuItemNew;
+
+    @FXML
+    private MenuItem menuItemSave;
+
+    @FXML
+    private MenuItem menuItemSaveAs;
+
+    @FXML
+    private MenuItem menuItemCloseWindow;
+
+    @FXML
+    private MenuItem menuItemExit;
+
+    @FXML
+    private MenuItem menuItemUndo;
+
+    @FXML
+    private MenuItem menuItemRedo;
+
+    @FXML
+    private MenuItem menuItemCut;
+
+    @FXML
+    private MenuItem menuItemCopy;
+
+    @FXML
+    private MenuItem menuItemPaste;
+
+    @FXML
+    private MenuItem menuItemDelete;
+
+    @FXML
+    private MenuItem menuItemSelectAll;
+
+    @FXML
+    private MenuItem menuItemFind;
+
+    @FXML
+    private MenuItem menuItemReplace;
+
+    @FXML
+    private MenuItem menuItemClean;
+
+    @FXML
+    private MenuItem menuItemRun;
+
+    @FXML
+    private MenuItem menuItemDebug;
+
+    @FXML
+    private MenuItem menuItemNewWindow;
+
+    @FXML
+    private MenuItem menuItemZoomIn;
+
+    @FXML
+    private MenuItem menuItemZoomOut;
+
+    @FXML
+    private MenuItem menuItemResetZoom;
+
+    @FXML
+    private CheckMenuItem checkMenuItemHideToolBar;
+
+    @FXML
+    private MenuItem menuItemDocumentation;
+
+    @FXML
+    private MenuItem menuItemAbout;
+
+    // Existing UI component injections...
+    private File currentCasTestsFile;
+    private File currentTcasIncorrectFile;
+    private File currentTcasCorrectFile;
+    private double currentZoomLevel = 1.0;
+    private static final double ZOOM_FACTOR = 0.1;
+    private TextArea lastFocusedTextArea;
+    private boolean isCasTestsUnsaved = false;
+    private boolean isTcasIncorrectUnsaved = false;
+    private boolean isTcasCorrectUnsaved = false;
+
+    @FXML
+    public void initialize() {
+        setupTextAreaFocusListeners();
+     // File Menu
+        menuItemNew.setOnAction(event -> handleNew());
+        menuItemSave.setOnAction(event -> handleSave());
+        menuItemSaveAs.setOnAction(event -> handleSaveAs());
+        menuItemCloseWindow.setOnAction(event -> handleCloseWindow());
+        menuItemExit.setOnAction(event -> handleExit());
+
+        // Edit Menu
+        menuItemUndo.setOnAction(event -> handleUndo());
+        menuItemRedo.setOnAction(event -> handleRedo());
+        menuItemCut.setOnAction(event -> handleCut());
+        menuItemCopy.setOnAction(event -> handleCopy());
+        menuItemPaste.setOnAction(event -> handlePaste());
+        menuItemDelete.setOnAction(event -> handleDelete());
+        menuItemSelectAll.setOnAction(event -> handleSelectAll());
+        menuItemFind.setOnAction(event -> handleFind());
+        menuItemReplace.setOnAction(event -> handleReplace());
+
+        // Project Menu
+        menuItemClean.setOnAction(event -> handleClean());
+
+        // Run Menu
+        menuItemDebug.setOnAction(event -> handleDebug());
+
+        // Window Menu
+        menuItemNewWindow.setOnAction(event -> handleNewWindow());
+        menuItemZoomIn.setOnAction(event -> handleZoomIn());
+        menuItemZoomOut.setOnAction(event -> handleZoomOut());
+        menuItemResetZoom.setOnAction(event -> handleResetZoom());
+
+        // Help Menu
+        menuItemDocumentation.setOnAction(event -> handleDocumentation());
+        menuItemAbout.setOnAction(event -> handleAbout());
+    }
+
+    private Object handleAbout() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private Object handleDocumentation() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private Object handleDebug() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private Object handleRun() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+	private void setupTextAreaFocusListeners() {
+        textAreaCasTests.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal) lastFocusedTextArea = textAreaCasTests;
+            isCasTestsUnsaved = true;
+        });
+        textAreaTcasIncorrect.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal) lastFocusedTextArea = textAreaTcasIncorrect;
+            isTcasIncorrectUnsaved = true;
+        });
+        textAreaTcasCorrect.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal) lastFocusedTextArea = textAreaTcasCorrect;
+            isTcasCorrectUnsaved = true;
+        });
+    }
+
+    // File Menu Handlers
+    private void handleNew() {
+        if (showUnsavedChangesAlert()) {
+            resetAllTextAreas();
+            showAllButtons();
+        }
+    }
+
+    private void handleSave() {
+        if (lastFocusedTextArea == null) return;
+        
+        File currentFile = getCurrentFileForTextArea(lastFocusedTextArea);
+        if (currentFile != null) {
+            saveToFile(currentFile, lastFocusedTextArea.getText());
+        } else {
+            handleSaveAs();
+        }
+    }
+
+    private void handleSaveAs() {
+        if (lastFocusedTextArea == null) return;
+        
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save File");
+        File file = fileChooser.showSaveDialog(lastFocusedTextArea.getScene().getWindow());
+        if (file != null) {
+            saveToFile(file, lastFocusedTextArea.getText());
+            updateCurrentFileForTextArea(lastFocusedTextArea, file);
+        }
+    }
+
+    private void saveToFile(File file, String content) {
+        try {
+            Files.writeString(file.toPath(), content);
+            showAlert("Success", "File saved successfully!", Alert.AlertType.INFORMATION);
+            resetUnsavedFlagForTextArea(lastFocusedTextArea);
+        } catch (IOException e) {
+            showAlert("Error", "Failed to save file: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    private void resetUnsavedFlagForTextArea(TextArea textArea) {
+        if (textArea == textAreaCasTests) {
+            isCasTestsUnsaved = false;
+        } else if (textArea == textAreaTcasIncorrect) {
+            isTcasIncorrectUnsaved = false;
+        } else if (textArea == textAreaTcasCorrect) {
+            isTcasCorrectUnsaved = false;
+        }
+    }
+    
+    private void handleCloseWindow() {
+        // Check for unsaved changes
+        if (showUnsavedChangesAlert()) {
+            // If user confirms or there are no unsaved changes, close the window
+            Stage stage = (Stage) textAreaCasTests.getScene().getWindow(); // Get the current window
+            stage.close(); // Close the window
+        }
+    }
+    
+    private void handleExit() {
+		Stage  stage = (Stage) textAreaCasTests.getScene().getWindow();
+		stage.close();
+	}
+
+    // Edit Menu Handlers
+    private void handleUndo() {
+        if (lastFocusedTextArea != null) {
+            lastFocusedTextArea.undo();
+        }
+    }
+
+    private void handleRedo() {
+        if (lastFocusedTextArea != null) {
+            lastFocusedTextArea.redo();
+        }
+    }
+
+    private void handleCut() {
+        if (lastFocusedTextArea != null) {
+            Clipboard clipboard = Clipboard.getSystemClipboard();
+            ClipboardContent content = new ClipboardContent();
+            content.putString(lastFocusedTextArea.getSelectedText());
+            clipboard.setContent(content);
+            lastFocusedTextArea.replaceSelection("");
+        }
+    }
+
+    private void handleCopy() {
+        if (lastFocusedTextArea != null) {
+            Clipboard clipboard = Clipboard.getSystemClipboard();
+            ClipboardContent content = new ClipboardContent();
+            content.putString(lastFocusedTextArea.getSelectedText());
+            clipboard.setContent(content);
+        }
+    }
+
+    private void handlePaste() {
+        if (lastFocusedTextArea != null) {
+            Clipboard clipboard = Clipboard.getSystemClipboard();
+            if (clipboard.hasString()) {
+                lastFocusedTextArea.replaceSelection(clipboard.getString());
+            }
+        }
+    }
+    
+    private void handleDelete() {
+        if (lastFocusedTextArea != null) {
+            // Delete selected text in the focused TextArea
+            int start = lastFocusedTextArea.getSelection().getStart();
+            int end = lastFocusedTextArea.getSelection().getEnd();
+            
+            if (start != end) { // If text is selected
+                lastFocusedTextArea.deleteText(start, end);
+            } else { // If no text is selected, delete the character at the caret position
+                int caretPosition = lastFocusedTextArea.getCaretPosition();
+                if (caretPosition < lastFocusedTextArea.getLength()) {
+                    lastFocusedTextArea.deleteText(caretPosition, caretPosition + 1);
+                }
+            }
+        } else {
+            showAlert("Delete Error", "No text area is focused.", Alert.AlertType.WARNING);
+        }
+    }
+    
+    private void handleSelectAll() {
+        if (lastFocusedTextArea != null) {
+            // Select all text in the focused TextArea
+            lastFocusedTextArea.selectAll();
+        } else {
+            showAlert("Selection Error", "No text area is focused.", Alert.AlertType.WARNING);
+        }
+    }
+    
+    private void handleFind() {
+        if (lastFocusedTextArea == null) {
+            showAlert("Find Error", "No text area is focused.", Alert.AlertType.WARNING);
+            return;
+        }
+
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Find");
+        dialog.setHeaderText("Enter text to find:");
+        Optional<String> result = dialog.showAndWait();
+
+        result.ifPresent(searchText -> {
+            String content = lastFocusedTextArea.getText();
+            int index = content.indexOf(searchText);
+            
+            if (index != -1) {
+                // Select the first occurrence
+                lastFocusedTextArea.selectRange(index, index + searchText.length());
+            } else {
+                showAlert("Find", "Text not found: " + searchText, Alert.AlertType.INFORMATION);
+            }
+        });
+    }
+    
+    private void handleReplace() {
+        if (lastFocusedTextArea == null) {
+            showAlert("Replace Error", "No text area is focused.", Alert.AlertType.WARNING);
+            return;
+        }
+
+        // Create custom dialog
+        Dialog<Pair<String, String>> dialog = new Dialog<>();
+        dialog.setTitle("Replace");
+        dialog.setHeaderText("Enter search and replacement text:");
+
+        // Set buttons
+        ButtonType replaceButton = new ButtonType("Replace", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(replaceButton, ButtonType.CANCEL);
+
+        // Create input fields
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        TextField searchField = new TextField();
+        TextField replaceField = new TextField();
+
+        grid.add(new Label("Search for:"), 0, 0);
+        grid.add(searchField, 1, 0);
+        grid.add(new Label("Replace with:"), 0, 1);
+        grid.add(replaceField, 1, 1);
+
+        dialog.getDialogPane().setContent(grid);
+
+        // Convert result to search-replace pair
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == replaceButton) {
+                return new Pair<>(searchField.getText(), replaceField.getText());
+            }
+            return null;
+        });
+
+        Optional<Pair<String, String>> result = dialog.showAndWait();
+
+        result.ifPresent(pair -> {
+            String searchText = pair.getKey();
+            String replaceText = pair.getValue();
+            String content = lastFocusedTextArea.getText();
+
+            if (content.contains(searchText)) {
+                String newContent = content.replace(searchText, replaceText);
+                lastFocusedTextArea.setText(newContent);
+                showAlert("Replace", "Replacement completed.", Alert.AlertType.INFORMATION);
+            } else {
+                showAlert("Replace", "Search text not found.", Alert.AlertType.WARNING);
+            }
+        });
+    }
+    
+    private void handleNewWindow() {
+        try {
+            // Load the FXML file for the new window
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Main.fxml"));
+            Parent root = loader.load();
+            
+            // Create new stage and scene
+            Stage newStage = new Stage();
+            newStage.setTitle("New Window - Debugger Interface");
+            newStage.setScene(new Scene(root));
+            
+            // Set position offset from current window
+            Stage currentStage = (Stage) textAreaCasTests.getScene().getWindow();
+            newStage.setX(currentStage.getX() + 20);
+            newStage.setY(currentStage.getY() + 20);
+            
+            newStage.show();
+        } catch (IOException e) {
+            showAlert("Window Error", "Could not create new window: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    // Window Menu Handlers
+    private void handleZoomIn() {
+        currentZoomLevel += ZOOM_FACTOR;
+        applyZoom();
+    }
+
+    private void handleZoomOut() {
+        currentZoomLevel = Math.max(0.5, currentZoomLevel - ZOOM_FACTOR);
+        applyZoom();
+    }
+    
+    private void handleResetZoom() {
+		currentZoomLevel = 1.0;
+		applyZoom();
+	}
+
+    private void applyZoom() {
+        textAreaCasTests.setStyle("-fx-font-size: " + (14 * currentZoomLevel) + "px;");
+        textAreaTcasIncorrect.setStyle("-fx-font-size: " + (14 * currentZoomLevel) + "px;");
+        textAreaTcasCorrect.setStyle("-fx-font-size: " + (14 * currentZoomLevel) + "px;");
+    }
+    
+    private void handleClean() {
+        // Confirm with the user before cleaning
+        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmAlert.setTitle("Clean Project");
+        confirmAlert.setHeaderText("Are you sure you want to clean the project?");
+        confirmAlert.setContentText("This will remove all generated files and reset the workspace.");
+        
+        Optional<ButtonType> result = confirmAlert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            try {
+                // 1. Define directories to clean
+                File projectDir = new File(System.getProperty("user.dir"));
+                File[] dirsToClean = {
+                    new File(projectDir, "cas-tests"),
+                    new File(projectDir, "tcas-incorrect"),
+                    new File(projectDir, "tcas-correct")
+                };
+                
+                // 2. Delete contents of directories
+                for (File dir : dirsToClean) {
+                    if (dir.exists()) {
+                        Files.walk(dir.toPath())
+                             .sorted(Comparator.reverseOrder())
+                             .map(Path::toFile)
+                             .forEach(File::delete);
+                    }
+                }
+                
+                // 3. Reset UI components
+                resetAllTextAreas();
+                showAllButtons();
+                
+                // 4. Show success message
+                showAlert("Clean Successful", 
+                         "Project cleaned successfully!\nRemoved files from:\n"
+                         + "- cas-tests\n- tcas-incorrect\n- tcas-correct",
+                         Alert.AlertType.INFORMATION);
+            } catch (IOException e) {
+                showAlert("Clean Error", 
+                         "Failed to clean project: " + e.getMessage(),
+                         Alert.AlertType.ERROR);
+            }
+        }
+    }
+
+    // Helper Methods
+    private boolean showUnsavedChangesAlert() {
+        if (!hasUnsavedChanges()) {
+            return true; // No unsaved changes, proceed without alert
+        }
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Unsaved Changes");
+        alert.setHeaderText("You have unsaved changes!");
+        alert.setContentText("Do you want to proceed without saving?");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        return result.isPresent() && result.get() == ButtonType.OK;
+    }
+
+    private boolean hasUnsavedChanges() {
+        if (lastFocusedTextArea == textAreaCasTests) {
+            return isCasTestsUnsaved;
+        } else if (lastFocusedTextArea == textAreaTcasIncorrect) {
+            return isTcasIncorrectUnsaved;
+        } else if (lastFocusedTextArea == textAreaTcasCorrect) {
+            return isTcasCorrectUnsaved;
+        }
+        return false; // No focused TextArea
+    }
+
+    private void showAlert(String title, String message, Alert.AlertType type) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void resetAllTextAreas() {
+        textAreaCasTests.clear();
+        textAreaCasTests.setVisible(false);
+        textAreaTcasIncorrect.clear();
+        textAreaTcasIncorrect.setVisible(false);
+        textAreaTcasCorrect.clear();
+        textAreaTcasCorrect.setVisible(false);
+    }
+
+    private void showAllButtons() {
+        buttonCasTests.setVisible(true);
+        buttonTcasIncorrect.setVisible(true);
+        buttonTcasCorrect.setVisible(true);
+    }
+
+    private File getCurrentFileForTextArea(TextArea textArea) {
+        if (textArea == textAreaCasTests) return currentCasTestsFile;
+        if (textArea == textAreaTcasIncorrect) return currentTcasIncorrectFile;
+        if (textArea == textAreaTcasCorrect) return currentTcasCorrectFile;
+        return null;
+    }
+
+    private void updateCurrentFileForTextArea(TextArea textArea, File file) {
+        if (textArea == textAreaCasTests) currentCasTestsFile = file;
+        else if (textArea == textAreaTcasIncorrect) currentTcasIncorrectFile = file;
+        else if (textArea == textAreaTcasCorrect) currentTcasCorrectFile = file;
+    }
+
+ // Method to handle file selection for cas-tests
     @FXML
     public void openFileExplorerCasTests() {
         handleFileSelection(buttonCasTests, textAreaCasTests);
@@ -57,12 +589,13 @@ public class Controller {
 
         Stage stage = (Stage) button.getScene().getWindow();
         File selectedFile = fileChooser.showOpenDialog(stage);
+        updateCurrentFileForTextArea(textArea, selectedFile);
 
         if (selectedFile != null) {
             try {
                 // Read file content
                 String content = Files.readString(selectedFile.toPath(), StandardCharsets.UTF_8);
-                
+
                 // Hide the button and show the TextArea with the content
                 button.setVisible(false);
                 textArea.setText(content);

@@ -2,10 +2,12 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckMenuItem?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -30,9 +32,9 @@
                   <Separator layoutX="390.0" layoutY="24.0" opacity="0.5" orientation="VERTICAL" prefHeight="376.0" prefWidth="17.0" styleClass="line" stylesheets="@application/application.css" />
 
                   <!-- TextAreas (Initially Invisible) -->
-                  <TextArea fx:id="textAreaCasTests" layoutX="-5.0" layoutY="30.0" prefHeight="350.0" prefWidth="200.0" styleClass="text-area" stylesheets="@application/application.css" visible="false" wrapText="true" />
+                  <TextArea fx:id="textAreaCasTests" layoutX="5.0" layoutY="30.0" prefHeight="350.0" prefWidth="197.0" styleClass="text-area" stylesheets="@application/application.css" visible="false" wrapText="true" AnchorPane.topAnchor="30.0" />
 
-                  <TextArea fx:id="textAreaTcasIncorrect" layoutX="205.0" layoutY="30.0" prefHeight="350.0" prefWidth="190.0" styleClass="text-area" stylesheets="@application/application.css" visible="false" wrapText="true" />
+                  <TextArea fx:id="textAreaTcasIncorrect" layoutX="207.0" layoutY="30.0" prefHeight="350.0" prefWidth="190.0" styleClass="text-area" stylesheets="@application/application.css" visible="false" wrapText="true" />
 
                   <TextArea fx:id="textAreaTcasCorrect" layoutX="403.0" layoutY="30.0" prefHeight="350.0" prefWidth="200.0" styleClass="text-area" stylesheets="@application/application.css" visible="false" wrapText="true" />
 
@@ -41,42 +43,54 @@
                      <menus>
                         <Menu mnemonicParsing="false" text="File">
                            <items>
-                              <MenuItem mnemonicParsing="false" text="Close" />
+                              <MenuItem fx:id="menuItemNew" mnemonicParsing="false" text="New" />
+                              <SeparatorMenuItem fx:id="menuItemSave" mnemonicParsing="false" />
+                              <MenuItem fx:id="menuItemSave" mnemonicParsing="false" text="Save" />
+                              <MenuItem fx:id="menuItemSaveAs" mnemonicParsing="false" text="Save as" />
+                              <SeparatorMenuItem mnemonicParsing="false" />
+                              <MenuItem fx:id="menuItemCloseWindow" mnemonicParsing="false" text="Close Window" />
+                              <SeparatorMenuItem mnemonicParsing="false" />
+                              <MenuItem fx:id="menuItemExit" mnemonicParsing="false" text="Exit" />
                            </items>
                         </Menu>
                         <Menu mnemonicParsing="false" styleClass="menu-item" text="Edit">
                            <items>
-                              <MenuItem mnemonicParsing="false" text="Delete" />
-                           </items>
-                        </Menu>
-                        <Menu mnemonicParsing="false" styleClass="menu-item" text="Navigate">
-                           <items>
-                              <MenuItem mnemonicParsing="false" text="Action 1" />
-                           </items>
-                        </Menu>
-                        <Menu mnemonicParsing="false" styleClass="menu-item" text="Search">
-                           <items>
-                              <MenuItem mnemonicParsing="false" text="Close" />
+                              <MenuItem fx:id="menuItemUndo" mnemonicParsing="false" text="Undo text change" />
+                              <MenuItem fx:id="menuItemRedo" mnemonicParsing="false" text="Redo text change" />
+                              <SeparatorMenuItem mnemonicParsing="false" />
+                              <MenuItem fx:id="menuItemCut" mnemonicParsing="false" text="Cut" />
+                              <MenuItem fx:id="menuItemCopy" mnemonicParsing="false" text="Copy " />
+                              <MenuItem fx:id="menuItemPaste" mnemonicParsing="false" text="Paste" />
+                              <SeparatorMenuItem mnemonicParsing="false" />
+                              <MenuItem fx:id="menuItemDelete" mnemonicParsing="false" text="Delete" />
+                              <MenuItem fx:id="menuItemSelectAll" mnemonicParsing="false" text="Select All" />
+                              <MenuItem fx:id="menuItemFind" mnemonicParsing="false" text="Find " />
+                              <MenuItem fx:id="menuItemReplace" mnemonicParsing="false" text="Replace" />
                            </items>
                         </Menu>
                         <Menu mnemonicParsing="false" styleClass="menu-item" text="Project">
                            <items>
-                              <MenuItem mnemonicParsing="false" text="Delete" />
+                              <MenuItem fx:id="menuItemClean" mnemonicParsing="false" text="Clean" />
                            </items>
                         </Menu>
                         <Menu mnemonicParsing="false" styleClass="menu-item" text="Run">
                            <items>
-                              <MenuItem mnemonicParsing="false" text="Close" />
+                              <MenuItem fx:id="menuItemRun" mnemonicParsing="false" text="Run" />
+                              <MenuItem fx:id="menuItemDebug" mnemonicParsing="false" text="Debug" />
                            </items>
                         </Menu>
                         <Menu mnemonicParsing="false" styleClass="menu-item" text="Window">
                            <items>
-                              <MenuItem mnemonicParsing="false" text="Delete" />
+                              <MenuItem fx:id="menuItemNewWindow" mnemonicParsing="false" text="New window" />
+                              <MenuItem fx:id="menuItemZoomIn" mnemonicParsing="false" text="Zoom In" />
+                              <MenuItem fx:id="menuItemZoomOut" mnemonicParsing="false" text="Zoom Out" />
+                              <MenuItem fx:id="menuItemResetZoom" mnemonicParsing="false" text="Reset Zoom" />
                            </items>
                         </Menu>
                         <Menu mnemonicParsing="false" styleClass="menu-item" text="Help">
                            <items>
-                              <MenuItem mnemonicParsing="false" text="About" />
+                              <MenuItem fx:id="menuItemDocumentation" mnemonicParsing="false" text="Documentation" />
+                              <MenuItem fx:id="menuItemAbout" mnemonicParsing="false" text="About" />
                            </items>
                         </Menu>
                      </menus>
