@@ -4,8 +4,9 @@
 #                         cas-tsets.txt: all test cases of the program
 #                         tcas_incorrect.gcno else add gcc -fprofile-arcs -ftest-coverage -o tcas_Incorrect tcas_Incorrect.c
 
-# (outputs) output.csv : each line is the set of instructions executed by the testcase(numberofline) 
+# (outputs) output.csv : each line is the set of instructions executed by the testcase(numberofline)
 
+gcc -fprofile-arcs -ftest-coverage -o tcas_Incorrect tcas_Incorrect.c
 Incorrect="tcas_Incorrect"   # your incorrect version of the tcas program here!
 
 Lines=$(wc -l < cas-tests.txt)  # Get the number of lines in cas-tests.txt
