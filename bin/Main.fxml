@@ -1,109 +1,108 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckMenuItem?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.ToolBar?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 
-<StackPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Controller">
+<StackPane fx:id="rootStackPane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Controller">
    <children>
-      <AnchorPane prefHeight="200.0" prefWidth="200.0">
-         <children>
-            <AnchorPane layoutX="247.0" layoutY="135.0" prefHeight="400.0" prefWidth="600.0" styleClass="root" stylesheets="@application/application.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-               <children>
-                  <!-- Buttons -->
-                  <Button fx:id="buttonCasTests" layoutX="14.0" layoutY="187.0" mnemonicParsing="false" onAction="#openFileExplorerCasTests" prefHeight="20.0" prefWidth="180.0" styleClass="buttons" stylesheets="@application/application.css" text="cas-tests" />
+   <Pane fx:id="mainPane" styleClass="root" stylesheets="@application/application.css">
+      <children>
+      
+      <!-- Buttons -->
+      <Button fx:id="buttonCasTests" mnemonicParsing="false" onAction="#openFileExplorerCasTests" styleClass="buttons" text="cas-tests" />
+      
+      <Button fx:id="buttonTcasIncorrect" mnemonicParsing="false" onAction="#openFileExplorerTcasIncorrect" styleClass="buttons" text="tcas-Incorrect" />
+      
+      <Button fx:id="buttonTcasCorrect" mnemonicParsing="false" onAction="#openFileExplorerTcasCorrect" styleClass="buttons" text="tcas-Correct" />
+      
+      <!-- Separators -->
+      <Separator fx:id="separator1" orientation="VERTICAL" styleClass="line" />
+      
+      <Separator fx:id="separator2" orientation="VERTICAL" styleClass="line" />
+      
+      <!-- Text Areas -->
+      <TextArea fx:id="textAreaCasTests" styleClass="text-area" visible="false" wrapText="true" />
+      
+      <TextArea fx:id="textAreaTcasIncorrect" styleClass="text-area" visible="false" wrapText="true" />
+      
+      <TextArea fx:id="textAreaTcasCorrect" styleClass="text-area" visible="false" wrapText="true" />
 
-                  <Button fx:id="buttonTcasIncorrect" layoutX="210.0" layoutY="187.0" mnemonicParsing="false" onAction="#openFileExplorerTcasIncorrect" prefHeight="20.0" prefWidth="180.0" styleClass="buttons" stylesheets="@application/application.css" text="tcas-Incorrect" />
+            <!-- Menu Bar -->
+            <MenuBar fx:id="menuBar" styleClass="white-bg">
+               <menus>
+                  <Menu mnemonicParsing="false" text="File">
+                     <items>
+                        <MenuItem fx:id="menuItemNew" text="New" />
+                        <SeparatorMenuItem />
+                        <MenuItem fx:id="menuItemSave" text="Save" />
+                        <MenuItem fx:id="menuItemSaveAs" text="Save as" />
+                        <SeparatorMenuItem />
+                        <MenuItem fx:id="menuItemCloseWindow" text="Close Window" />
+                        <SeparatorMenuItem />
+                        <MenuItem fx:id="menuItemExit" text="Exit" />
+                     </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" styleClass="menu-item" text="Edit">
+                     <items>
+                        <MenuItem fx:id="menuItemUndo" mnemonicParsing="false" text="Undo text change" />
+                        <MenuItem fx:id="menuItemRedo" mnemonicParsing="false" text="Redo text change" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem fx:id="menuItemCut" mnemonicParsing="false" text="Cut" />
+                        <MenuItem fx:id="menuItemCopy" mnemonicParsing="false" text="Copy " />
+                        <MenuItem fx:id="menuItemPaste" mnemonicParsing="false" text="Paste" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem fx:id="menuItemDelete" mnemonicParsing="false" text="Delete" />
+                        <MenuItem fx:id="menuItemSelectAll" mnemonicParsing="false" text="Select All" />
+                        <MenuItem fx:id="menuItemFind" mnemonicParsing="false" text="Find " />
+                        <MenuItem fx:id="menuItemReplace" mnemonicParsing="false" text="Replace" />
+                     </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" styleClass="menu-item" text="Project">
+                     <items>
+                        <MenuItem fx:id="menuItemClean" mnemonicParsing="false" text="Clean" />
+                     </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" styleClass="menu-item" text="Run">
+                     <items>
+                        <MenuItem fx:id="menuItemRun" mnemonicParsing="false" text="Run" />
+                        <MenuItem fx:id="menuItemDebug" mnemonicParsing="false" text="Debug" />
+                     </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" styleClass="menu-item" text="Window">
+                     <items>
+                        <MenuItem fx:id="menuItemNewWindow" mnemonicParsing="false" text="New window" />
+                        <MenuItem fx:id="menuItemZoomIn" mnemonicParsing="false" text="Zoom In" />
+                        <MenuItem fx:id="menuItemZoomOut" mnemonicParsing="false" text="Zoom Out" />
+                        <MenuItem fx:id="menuItemResetZoom" mnemonicParsing="false" text="Reset Zoom" />
+                     </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" styleClass="menu-item" text="Help">
+                     <items>
+                        <MenuItem fx:id="menuItemDocumentation" mnemonicParsing="false" text="Documentation" />
+                        <MenuItem fx:id="menuItemAbout" mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+               </menus>
+            </MenuBar>
 
-                  <Button fx:id="buttonTcasCorrect" layoutX="407.0" layoutY="187.0" mnemonicParsing="false" onAction="#openFileExplorerTcasCorrect" prefHeight="20.0" prefWidth="180.0" styleClass="buttons" stylesheets="@application/application.css" text="tcas-Correct" />
-
-                  <!-- Separators -->
-                  <Separator layoutX="194.0" layoutY="25.0" opacity="0.5" orientation="VERTICAL" prefHeight="376.0" prefWidth="17.0" styleClass="line" stylesheets="@application/application.css" />
-
-                  <Separator layoutX="390.0" layoutY="24.0" opacity="0.5" orientation="VERTICAL" prefHeight="376.0" prefWidth="17.0" styleClass="line" stylesheets="@application/application.css" />
-
-                  <!-- TextAreas (Initially Invisible) -->
-                  <TextArea fx:id="textAreaCasTests" layoutX="5.0" layoutY="30.0" prefHeight="350.0" prefWidth="197.0" styleClass="text-area" stylesheets="@application/application.css" visible="false" wrapText="true" AnchorPane.topAnchor="30.0" />
-
-                  <TextArea fx:id="textAreaTcasIncorrect" layoutX="207.0" layoutY="30.0" prefHeight="350.0" prefWidth="190.0" styleClass="text-area" stylesheets="@application/application.css" visible="false" wrapText="true" />
-
-                  <TextArea fx:id="textAreaTcasCorrect" layoutX="403.0" layoutY="30.0" prefHeight="350.0" prefWidth="200.0" styleClass="text-area" stylesheets="@application/application.css" visible="false" wrapText="true" />
-
-                  <!-- Menu Bar -->
-                  <MenuBar layoutX="-1.0" layoutY="1.0" prefHeight="19.0" prefWidth="601.0" styleClass="white-bg" stylesheets="@application/application.css">
-                     <menus>
-                        <Menu mnemonicParsing="false" text="File">
-                           <items>
-                              <MenuItem fx:id="menuItemNew" mnemonicParsing="false" text="New" />
-                              <SeparatorMenuItem fx:id="menuItemSave" mnemonicParsing="false" />
-                              <MenuItem fx:id="menuItemSave" mnemonicParsing="false" text="Save" />
-                              <MenuItem fx:id="menuItemSaveAs" mnemonicParsing="false" text="Save as" />
-                              <SeparatorMenuItem mnemonicParsing="false" />
-                              <MenuItem fx:id="menuItemCloseWindow" mnemonicParsing="false" text="Close Window" />
-                              <SeparatorMenuItem mnemonicParsing="false" />
-                              <MenuItem fx:id="menuItemExit" mnemonicParsing="false" text="Exit" />
-                           </items>
-                        </Menu>
-                        <Menu mnemonicParsing="false" styleClass="menu-item" text="Edit">
-                           <items>
-                              <MenuItem fx:id="menuItemUndo" mnemonicParsing="false" text="Undo text change" />
-                              <MenuItem fx:id="menuItemRedo" mnemonicParsing="false" text="Redo text change" />
-                              <SeparatorMenuItem mnemonicParsing="false" />
-                              <MenuItem fx:id="menuItemCut" mnemonicParsing="false" text="Cut" />
-                              <MenuItem fx:id="menuItemCopy" mnemonicParsing="false" text="Copy " />
-                              <MenuItem fx:id="menuItemPaste" mnemonicParsing="false" text="Paste" />
-                              <SeparatorMenuItem mnemonicParsing="false" />
-                              <MenuItem fx:id="menuItemDelete" mnemonicParsing="false" text="Delete" />
-                              <MenuItem fx:id="menuItemSelectAll" mnemonicParsing="false" text="Select All" />
-                              <MenuItem fx:id="menuItemFind" mnemonicParsing="false" text="Find " />
-                              <MenuItem fx:id="menuItemReplace" mnemonicParsing="false" text="Replace" />
-                           </items>
-                        </Menu>
-                        <Menu mnemonicParsing="false" styleClass="menu-item" text="Project">
-                           <items>
-                              <MenuItem fx:id="menuItemClean" mnemonicParsing="false" text="Clean" />
-                           </items>
-                        </Menu>
-                        <Menu mnemonicParsing="false" styleClass="menu-item" text="Run">
-                           <items>
-                              <MenuItem fx:id="menuItemRun" mnemonicParsing="false" text="Run" />
-                              <MenuItem fx:id="menuItemDebug" mnemonicParsing="false" text="Debug" />
-                           </items>
-                        </Menu>
-                        <Menu mnemonicParsing="false" styleClass="menu-item" text="Window">
-                           <items>
-                              <MenuItem fx:id="menuItemNewWindow" mnemonicParsing="false" text="New window" />
-                              <MenuItem fx:id="menuItemZoomIn" mnemonicParsing="false" text="Zoom In" />
-                              <MenuItem fx:id="menuItemZoomOut" mnemonicParsing="false" text="Zoom Out" />
-                              <MenuItem fx:id="menuItemResetZoom" mnemonicParsing="false" text="Reset Zoom" />
-                           </items>
-                        </Menu>
-                        <Menu mnemonicParsing="false" styleClass="menu-item" text="Help">
-                           <items>
-                              <MenuItem fx:id="menuItemDocumentation" mnemonicParsing="false" text="Documentation" />
-                              <MenuItem fx:id="menuItemAbout" mnemonicParsing="false" text="About" />
-                           </items>
-                        </Menu>
-                     </menus>
-                  </MenuBar>
-
-                  <!-- ToolBar -->
-                  <ToolBar layoutY="382.0" prefHeight="25.0" prefWidth="600.0" styleClass="white-bg" stylesheets="@application/application.css" />
-               </children>
-            </AnchorPane>
-         </children>
-      </AnchorPane>
+            <!-- ToolBar -->
+            <HBox fx:id="buttonContainer" spacing="0" styleClass="button-bar">
+   <children>
+      <Button fx:id="trantula" onAction="#calculateTrantula" styleClass="tool-button" text="Trantula" />
+      <Button fx:id="ochiai" onAction="#calculateOchiai" styleClass="tool-button" text="Ochiai" />
+      <Button fx:id="zoltar" onAction="#calculateZoltar" styleClass="tool-button" text="Zoltar" />
+      <Button fx:id="jaccard" onAction="#calculateJaccard" styleClass="tool-button" text="Jaccard" />
    </children>
-   <opaqueInsets>
-      <Insets />
-   </opaqueInsets>
+</HBox>
+         </children>
+      </Pane>
+   </children>
 </StackPane>

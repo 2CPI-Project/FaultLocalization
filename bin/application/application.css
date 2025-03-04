@@ -74,3 +74,34 @@
 .text-area:hover { 
     -fx-border-color: #fff8f0;
 }
+
+/* Remove all spacing/padding */
+.button-bar {
+    -fx-spacing: 0;
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+    -fx-background-color: #ffff;
+}
+
+.tool-button {
+    -fx-background-insets: 0;
+    -fx-padding: 8 15;
+    -fx-border-style: solid ;
+    -fx-border-width: 0.5px;
+    -fx-border-color: #c2bcb9;
+	-fx-cursor: hand ;
+	-fx-font-size: 14px;
+	-fx-font-family: Arial;
+    -fx-background-radius: 0;
+    -fx-background-color: #e4ddc7;
+}
+
+.tool-button:hover {
+    -fx-background-color: #d4c8a8;
+}
+
+/* Remove focus highlight */
+.tool-button:focused {
+    -fx-border-width: 0;
+    -fx-background-insets: 0;
+}

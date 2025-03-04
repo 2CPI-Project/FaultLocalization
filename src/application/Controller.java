@@ -9,9 +9,12 @@ import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.Pane;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +33,18 @@ public class Controller {
 
     @FXML
     private Button buttonTcasCorrect;
+    
+    @FXML
+    private Button trantula;
+    
+    @FXML
+    private Button ochiai;
+    
+    @FXML
+    private Button zoltar;
+    
+    @FXML
+    private Button jaccard;
 
     @FXML
     private TextArea textAreaCasTests;
@@ -111,6 +126,21 @@ public class Controller {
 
     @FXML
     private MenuItem menuItemAbout;
+    
+    @FXML 
+    private StackPane rootStackPane;
+    
+    @FXML 
+    private Pane mainPane;
+    
+    @FXML 
+    private MenuBar menuBar;
+    
+    @FXML 
+    private HBox buttonContainer;
+    
+    @FXML 
+    private Separator separator1, separator2;
 
     // Existing UI component injections...
     private File currentCasTestsFile;
@@ -122,9 +152,22 @@ public class Controller {
     private boolean isCasTestsUnsaved = false;
     private boolean isTcasIncorrectUnsaved = false;
     private boolean isTcasCorrectUnsaved = false;
+ // Layout Constants
+    private static final double BUTTON_WIDTH_PERCENT = 0.3; // 30% of parent width
+    private static final double BUTTON_SPACING_PERCENT = 0.03; // 3.3% spacing
+    private static final double SEPARATOR_POSITION_1 = 0.33; // 33% from left
+    private static double SEPARATOR_POSITION_2 = 0.66; // 66% from left
+    private static final double BUTTON_WIDTH_PERCENT2 = 0.5;
+
 
     @FXML
     public void initialize() {
+    	// Verify all injections first
+        assert menuBar != null : "menuBar not injected!";
+        assert buttonContainer != null : "toolBar not injected!";
+        
+        setupDynamicLayout();
+        setupFixedElements();
         setupTextAreaFocusListeners();
      // File Menu
         menuItemNew.setOnAction(event -> handleNew());
@@ -159,6 +202,71 @@ public class Controller {
         // Help Menu
         menuItemDocumentation.setOnAction(event -> handleDocumentation());
         menuItemAbout.setOnAction(event -> handleAbout());
+    }
+    
+    private void setupDynamicLayout() {
+        // Listen for pane size changes
+        mainPane.widthProperty().addListener((obs, old, newVal) -> updateLayout());
+        mainPane.heightProperty().addListener((obs, old, newVal) -> updateLayout());
+        
+        // Initial layout
+        updateLayout();
+    }
+
+    private void setupFixedElements() {
+        // Menu bar fixed at top
+        menuBar.setLayoutY(0);
+        menuBar.prefWidthProperty().bind(mainPane.widthProperty());
+        
+        // Tool bar fixed at bottom
+        buttonContainer.setLayoutY(mainPane.getHeight() - buttonContainer.getHeight());
+        buttonContainer.prefWidthProperty().bind(mainPane.widthProperty());
+    }
+
+    private void updateLayout() {
+        double width = mainPane.getWidth();
+        double height = mainPane.getHeight();
+        
+        // Update buttons
+        positionButton(buttonCasTests, width * BUTTON_SPACING_PERCENT);
+        positionButton(buttonTcasIncorrect, width * (BUTTON_WIDTH_PERCENT + 2*BUTTON_SPACING_PERCENT));
+        positionButton(buttonTcasCorrect, width * (2*BUTTON_WIDTH_PERCENT + 3*BUTTON_SPACING_PERCENT));
+        
+        // Update separators
+        positionSeparator(separator1, width * SEPARATOR_POSITION_1, height);
+        positionSeparator(separator2, width * SEPARATOR_POSITION_2, height);
+        
+        // Update text areas
+        positionTextArea(textAreaCasTests, width * BUTTON_SPACING_PERCENT, height);
+        positionTextArea(textAreaTcasIncorrect, width * (BUTTON_WIDTH_PERCENT + BUTTON_SPACING_PERCENT) + 15, height);
+        positionTextArea(textAreaTcasCorrect, width * (4*(BUTTON_WIDTH_PERCENT + BUTTON_SPACING_PERCENT)) + 15, height);
+        
+        // Update tool bar position
+        buttonContainer.setLayoutY(height - buttonContainer.getHeight());
+        trantula.setPrefWidth(mainPane.getWidth() * BUTTON_WIDTH_PERCENT2);
+        ochiai.setPrefWidth(mainPane.getWidth() * BUTTON_WIDTH_PERCENT2);
+        zoltar.setPrefWidth(mainPane.getWidth() * BUTTON_WIDTH_PERCENT2);
+        jaccard.setPrefWidth(mainPane.getWidth() * BUTTON_WIDTH_PERCENT2);
+    }
+
+    private void positionButton(Button button, double xPosition) {
+        button.setLayoutX(xPosition);
+        button.setLayoutY(mainPane.getHeight() * 0.47);
+        button.setPrefWidth(mainPane.getWidth() * BUTTON_WIDTH_PERCENT);
+        button.setPrefHeight(mainPane.getHeight() * 0.07);
+    }
+
+    private void positionSeparator(Separator separator, double xPosition, double paneHeight) {
+        separator.setLayoutX(xPosition + 5);
+        separator.setLayoutY(25.0);
+        separator.setPrefHeight(paneHeight);
+    }
+
+    private void positionTextArea(TextArea textArea, double xPosition, double paneHeight) {
+        textArea.setLayoutX(xPosition);
+        textArea.setLayoutY(30);
+        textArea.setPrefWidth(mainPane.getWidth() * BUTTON_WIDTH_PERCENT);
+        textArea.setPrefHeight(paneHeight - buttonContainer.getHeight() - 30);
     }
 
     private Object handleAbout() {
@@ -203,6 +311,10 @@ public class Controller {
         if (showUnsavedChangesAlert()) {
             resetAllTextAreas();
             showAllButtons();
+            if (SEPARATOR_POSITION_2 == 0.9) {
+            	SEPARATOR_POSITION_2 = 0.66;
+            	separator2.setLayoutX(mainPane.getWidth() * SEPARATOR_POSITION_2 + 5);
+            }
         }
     }
 
@@ -466,7 +578,7 @@ public class Controller {
         Optional<ButtonType> result = confirmAlert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
-                // 1. Define directories to clean
+                // Define directories to clean
                 File projectDir = new File(System.getProperty("user.dir"));
                 File[] dirsToClean = {
                     new File(projectDir, "cas-tests"),
@@ -474,7 +586,7 @@ public class Controller {
                     new File(projectDir, "tcas-correct")
                 };
                 
-                // 2. Delete contents of directories
+                // Delete contents of directories
                 for (File dir : dirsToClean) {
                     if (dir.exists()) {
                         Files.walk(dir.toPath())
@@ -484,11 +596,11 @@ public class Controller {
                     }
                 }
                 
-                // 3. Reset UI components
+                // Reset UI components
                 resetAllTextAreas();
                 showAllButtons();
                 
-                // 4. Show success message
+                // Show success message
                 showAlert("Clean Successful", 
                          "Project cleaned successfully!\nRemoved files from:\n"
                          + "- cas-tests\n- tcas-incorrect\n- tcas-correct",
@@ -581,7 +693,7 @@ public class Controller {
         handleFileSelection(buttonTcasCorrect, textAreaTcasCorrect);
     }
 
-    // Generic method to handle file selection
+    //handle file selection
     private void handleFileSelection(Button button, TextArea textArea) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select a File");
@@ -598,7 +710,12 @@ public class Controller {
 
                 // Hide the button and show the TextArea with the content
                 button.setVisible(false);
-                textArea.setText(content);
+                if (button != buttonTcasCorrect) {
+                	textArea.setText(content);
+                } else {
+                	SEPARATOR_POSITION_2 = 0.9;
+                	separator2.setLayoutX(mainPane.getWidth() * SEPARATOR_POSITION_2);
+                }
                 textArea.setVisible(true);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -606,6 +723,26 @@ public class Controller {
                 textArea.setVisible(true);
             }
         }
+    }
+    @FXML
+    private void calculateTrantula() {
+    	//TO-Do
+    	//textAreaTcasCorrect.setText(content);
+    }
+    @FXML
+    private void calculateOchiai() {
+    	//TO-Do
+    	//textAreaTcasCorrect.setText(content);
+    }
+    @FXML
+    private void calculateZoltar() {
+    	//TO-Do
+    	//textAreaTcasCorrect.setText(content);
+    }
+    @FXML
+    private void calculateJaccard() {
+    	//TO-Do
+    	//textAreaTcasCorrect.setText(content);
     }
 }
 
