@@ -11,15 +11,15 @@ public class susdegree {
         
         String filenameOchiai      = "Ochiai.csv";
         String filenameTarantula   = "Tarantula.csv";
-        String filenameWSR         = "WSR.csv";
-        String filenameEWSR        = "EWSR.csv";
+        String filenameJaccard         = "Jaccard.csv";
+        String filenameZoltar        = "Zoltar.csv";
         
         try (
             BufferedReader lecteurFichier = new BufferedReader(new FileReader(filenameParametres));
             PrintWriter ecrivainOchiai    = new PrintWriter(filenameOchiai);
             PrintWriter ecrivainTarantula = new PrintWriter(filenameTarantula);
-            PrintWriter ecrivainWSR       = new PrintWriter(filenameWSR);
-            PrintWriter ecrivainEWSR      = new PrintWriter(filenameEWSR);
+            PrintWriter ecrivainJaccard       = new PrintWriter(filenameJaccard);
+            PrintWriter ecrivainZoltar      = new PrintWriter(filenameZoltar);
         ) {
             String ligne;
             
@@ -66,18 +66,18 @@ public class susdegree {
                     tarantulaValeur = failRatio / denomTarantula;
                 }
                 
-                // WSR = (ef/(ef + nf)) * (ep/(ep + np))
-                double wsrValeur = failRatio * passRatio;
+                // Jaccard = ef / (ef + nf + ep)
+                double Jaccard = ef / (ef + nf + ep);
                 
                 
-                // EWSR = WSR * Ochiai
-                double ewsrValeur = wsrValeur * ochiaiValeur;
+                // Zoltar = ef / (ef+nf+ep+((10000*nf*ep)/ef))
+                double Zoltar = ef / (ef+nf+ep+((10000*nf*ep)/ef));
                 
                 
                 ecrivainOchiai.println(ochiaiValeur);
                 ecrivainTarantula.println(tarantulaValeur);
-                ecrivainWSR.println(wsrValeur);
-                ecrivainEWSR.println(ewsrValeur);
+                ecrivainJaccard.println(Jaccard);
+                ecrivainZoltar.println(Zoltar);
             }
             
             
