@@ -71,8 +71,10 @@ public class susdegree {
                 
                 
                 // Zoltar = ef / (ef+nf+ep+((10000*nf*ep)/ef))
-                double Zoltar = ef / (ef+nf+ep+((10000*nf*ep)/ef));
-                
+                double Zoltar = 0.0;
+                if (ef != 0) {
+                    Zoltar = ef / (ef + nf + ep + ((10000.0 * nf * ep) / ef));
+                }
                 
                 ecrivainOchiai.println(ochiaiValeur);
                 ecrivainTarantula.println(tarantulaValeur);
