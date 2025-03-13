@@ -45,6 +45,15 @@ public class Controller {
     
     @FXML
     private Button jaccard;
+    
+    @FXML
+    private Button pf;
+    
+    @FXML
+    private Button classm;
+    
+    @FXML
+    private Button par;
 
     @FXML
     private TextArea textAreaCasTests;
@@ -157,7 +166,8 @@ public class Controller {
     private static final double BUTTON_SPACING_PERCENT = 0.03; // 3.3% spacing
     private static final double SEPARATOR_POSITION_1 = 0.33; // 33% from left
     private static double SEPARATOR_POSITION_2 = 0.66; // 66% from left
-    private static final double BUTTON_WIDTH_PERCENT2 = 0.5;
+    private static final double BUTTON_WIDTH_PERCENT2 = 0.3;
+    private static final double BUTTON_WIDTH_PERCENT3 = 0.245312500000001;
 
 
     @FXML
@@ -247,6 +257,9 @@ public class Controller {
         ochiai.setPrefWidth(mainPane.getWidth() * BUTTON_WIDTH_PERCENT2);
         zoltar.setPrefWidth(mainPane.getWidth() * BUTTON_WIDTH_PERCENT2);
         jaccard.setPrefWidth(mainPane.getWidth() * BUTTON_WIDTH_PERCENT2);
+        pf.setPrefWidth(mainPane.getWidth() * BUTTON_WIDTH_PERCENT3);
+        classm.setPrefWidth(mainPane.getWidth() * BUTTON_WIDTH_PERCENT3);
+        par.setPrefWidth(mainPane.getWidth() * BUTTON_WIDTH_PERCENT3);
     }
 
     private void positionButton(Button button, double xPosition) {
@@ -743,6 +756,18 @@ public class Controller {
     private void calculateJaccard() {
     	//TO-Do
     	//textAreaTcasCorrect.setText(content);
+    }
+    @FXML
+    private void categorize_test_cases() {
+    	//TO-Do
+    }
+    @FXML
+    private void display_class() {
+    	//TO-Do
+    }
+    @FXML
+    private void display_para() {
+    	//TO-Do
     }
 }
 

@@ -93,9 +93,12 @@
                </menus>
             </MenuBar>
 
-            <!-- ToolBar -->
+                                                              
             <HBox fx:id="buttonContainer" spacing="0" styleClass="button-bar">
    <children>
+      <Button fx:id="pf" onAction="#categorize_test_cases" styleClass="tool-button" text="categorize" />
+      <Button fx:id="classm" onAction="#display_class" styleClass="tool-button" text="Class" />
+      <Button fx:id="par" onAction="#display_para" styleClass="tool-button" text="Parametres" />
       <Button fx:id="trantula" onAction="#calculateTrantula" styleClass="tool-button" text="Trantula" />
       <Button fx:id="ochiai" onAction="#calculateOchiai" styleClass="tool-button" text="Ochiai" />
       <Button fx:id="zoltar" onAction="#calculateZoltar" styleClass="tool-button" text="Zoltar" />
