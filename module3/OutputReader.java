@@ -46,11 +46,11 @@ public class OutputReader {
 
                 for (int index = 0; index < results.size() && index < linesFromFile.size(); index++) {
                     String line = linesFromFile.get(index);
-                    String[] values = line.split(","); // ✅ Updated: No spaces, just commas
+                    String[] values = line.split(","); 
 
                     boolean test = false;
                     for (String val : values) {
-                        if (val.trim().equals(String.valueOf(i))) { // Trim ensures no hidden spaces
+                        if (val.trim().equals(String.valueOf(i))) { 
                             test = true;
                             break;
                         }
