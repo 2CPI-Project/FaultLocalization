@@ -1,0 +1,127 @@
+/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+.white-bg {
+	-fx-background-color: #ffff;
+}
+
+.root {
+	-fx-background-color: #fff8f0;
+}
+
+.separator {
+    -fx-border-color: transparent; /* Ensures background stays transparent */
+}
+
+
+.separator .line {
+	-fx-background-color: transparent;
+	-fx-border-color: #c2bcb9;
+	-fx-border-width: 0.5px;
+}
+
+.menu:focused,.menu:hover,.menu:selected {
+	-fx-background-color: #c2bcb9;
+}
+
+.menu-item:focused,.menu-item:hover{
+ 	-fx-background-color: #c2bcb9;
+ }
+.buttons {
+	-fx-background-color: #e4ddc7;
+	-fx-border-style: solid;
+	-fx-border-radius: 5%;
+	-fx-border-color: #c2bcb9;
+	-fx-cursor: hand ;
+	-fx-font-size: 14px;
+	-fx-font-family: Arial;
+}
+
+.buttons:hover {
+	-fx-background-color: #d4c8a8;
+	-fx-font-weight: bold;
+	-fx-border-style: solid;
+	-fx-border-radius: 5%;
+	-fx-border-color: #c2bcb9;
+}
+
+.text-area {
+    -fx-background-color: #fff8f0; /* Matches the root background */
+    -fx-border-color: #fff8f0; 
+    -fx-border-width: 0px;
+    -fx-border-radius: 5px;
+    -fx-padding: 0;
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial";
+    -fx-text-fill: #333; /* Dark gray for readability */
+}
+
+.text-area .content {
+    -fx-background-color: #fff8f0; /* Ensure text background matches root */
+    -fx-font-family: Arial;
+    -fx-padding: 0;
+}
+
+.text-area .scroll-bar {
+	-fx-background-color: transparent;
+	-fx-opacity: 0.0;
+    -fx-pref-height: 0;
+    -fx-pref-width: 0;
+	
+
+}
+
+
+
+.text-area:hover { 
+    -fx-border-color: #fff8f0;
+}
+
+/* Remove all spacing/padding */
+.button-bar {
+    -fx-spacing: 0;
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+    -fx-background-color: #ffff;
+}
+
+.tool-button {
+    -fx-background-insets: 0;
+    -fx-padding: 8 0;
+    -fx-border-style: solid ;
+    -fx-border-width: 0.5px;
+    -fx-border-color: #c2bcb9;
+	-fx-cursor: hand ;
+	-fx-font-size: 14px;
+	-fx-font-family: Arial;
+    -fx-background-radius: 0;
+    -fx-background-color: #e4ddc7;
+}
+
+.tool-button:hover {
+    -fx-background-color: #d4c8a8;
+}
+
+/* Remove focus highlight */
+.tool-button:focused {
+    -fx-border-width: 0;
+    -fx-background-insets: 0;
+}
+
+.button-white {
+	-fx-background-insets: 0;
+    -fx-padding: 8 15;
+    -fx-border-style: solid ;
+    -fx-border-width: 0.5px;
+    -fx-border-color: #c2bcb9;
+	-fx-cursor: hand ;
+	-fx-font-size: 12px;
+	-fx-font-family: Arial;
+    -fx-background-radius: 0;
+	-fx-background-color: #ffffff;
+}
+
+.button-white:hover {
+    -fx-background-color: #f0f0f0; 
+    -fx-border-color: #a8a8a8; 
+    -fx-text-fill: #000000; 
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 2, 0.5, 0, 1); 
+}
