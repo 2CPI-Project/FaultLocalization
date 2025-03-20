@@ -9,7 +9,7 @@ public class OutputReader {
     public static void main(String[] arg) {
 
         // Step 1: Read path1 (results.csv)
-        String path1 = "/home/kali/core/module3/results.csv";
+        String path1 = "./src/packages/results.csv";
         List<Boolean> results = new ArrayList<>();
 
         try (BufferedReader reader1 = new BufferedReader(new FileReader(path1))) {
@@ -23,7 +23,7 @@ public class OutputReader {
         }
 
         // Step 2: Read path2 (new-output.csv)
-        String path2 = "/home/kali/core/module3/output.csv";
+        String path2 = "./src/packages/output.csv";
         List<String> linesFromFile = new ArrayList<>();
 
         try (BufferedReader reader2 = new BufferedReader(new FileReader(path2))) {
@@ -37,7 +37,7 @@ public class OutputReader {
         }
 
         // Step 3: Store results in parametres.csv
-        String outputPath = "/home/kali/core/module3/parametres.csv";
+        String outputPath = "./src/packages/parametres.csv";
         try (FileWriter writer = new FileWriter(outputPath)) {
 
             // Step 4: Process each instruction (from 1 to 172)
@@ -46,11 +46,11 @@ public class OutputReader {
 
                 for (int index = 0; index < results.size() && index < linesFromFile.size(); index++) {
                     String line = linesFromFile.get(index);
-                    String[] values = line.split(","); // ✅ Updated: No spaces, just commas
+                    String[] values = line.split(","); 
 
                     boolean test = false;
                     for (String val : values) {
-                        if (val.trim().equals(String.valueOf(i))) { // Trim ensures no hidden spaces
+                        if (val.trim().equals(String.valueOf(i))) { 
                             test = true;
                             break;
                         }
