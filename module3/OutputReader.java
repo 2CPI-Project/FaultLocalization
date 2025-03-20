@@ -36,12 +36,25 @@ public class OutputReader {
             e.printStackTrace();
         }
 
-        // Step 3: Store results in parametres.csv
+        // Step 3: Read tcas_Incorrect.c to determine the number of lines
+        String tcasPath = "./src/packages/tcas_Incorrect.c";
+        int numberOfLines = 0;
+
+        try (BufferedReader tcasReader = new BufferedReader(new FileReader(tcasPath))) {
+            while (tcasReader.readLine() != null) {
+                numberOfLines++; // Count the number of lines
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + tcasPath);
+            e.printStackTrace();
+        }
+
+        // Step 4: Store results in parametres.csv
         String outputPath = "./src/packages/parametres.csv";
         try (FileWriter writer = new FileWriter(outputPath)) {
 
-            // Step 4: Process each instruction (from 1 to 172)
-            for (int i = 1; i <= 172; i++) {
+            // Step 5: Process each instruction (from 1 to numberOfLines)
+            for (int i = 1; i <= numberOfLines; i++) {
                 int ep = 0, ef = 0, np = 0, nf = 0;
 
                 for (int index = 0; index < results.size() && index < linesFromFile.size(); index++) {
@@ -62,7 +75,7 @@ public class OutputReader {
                     else if (!test && !results.get(index)) nf++;
                 }
 
-                // Step 5: Write results to file
+                // Step 6: Write results to file
                 writer.write(ep + "," + ef + "," + np + "," + nf + "\n");
             }
 
