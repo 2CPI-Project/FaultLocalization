@@ -1,0 +1,7 @@
+.settings/
+bin/
+package/
+src/
+.classpath
+.project
+build.fxbuild
