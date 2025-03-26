@@ -9,7 +9,7 @@ public class OutputReader {
     public static void main(String[] arg) {
 
         // Step 1: Read path1 (results.csv)
-        String path1 = "./src/packages/results.csv";
+        String path1 = "src/packages/results.csv";
         List<Boolean> results = new ArrayList<>();
 
         try (BufferedReader reader1 = new BufferedReader(new FileReader(path1))) {
@@ -23,7 +23,7 @@ public class OutputReader {
         }
 
         // Step 2: Read path2 (new-output.csv)
-        String path2 = "./src/packages/output.csv";
+        String path2 = "src/packages/output.csv";
         List<String> linesFromFile = new ArrayList<>();
 
         try (BufferedReader reader2 = new BufferedReader(new FileReader(path2))) {
@@ -37,7 +37,7 @@ public class OutputReader {
         }
 
         // Step 3: Read tcas_Incorrect.c to determine the number of lines
-        String tcasPath = "./src/packages/tcas_Incorrect.c";
+        String tcasPath = "src/packages/tcas_Incorrect.c";
         int numberOfLines = 0;
 
         try (BufferedReader tcasReader = new BufferedReader(new FileReader(tcasPath))) {
@@ -50,7 +50,7 @@ public class OutputReader {
         }
 
         // Step 4: Store results in parametres.csv
-        String outputPath = "./src/packages/parametres.csv";
+        String outputPath = "src/packages/parametres.csv";
         try (FileWriter writer = new FileWriter(outputPath)) {
 
             // Step 5: Process each instruction (from 1 to numberOfLines)
