@@ -1,6 +1,10 @@
 package application;
 
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import backend.*;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
@@ -19,10 +23,17 @@ import javafx.scene.layout.Pane;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.Optional;
+import java.util.concurrent.Callable;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.io.*;
+import java.util.*;
 
 public class Controller {
 	@FXML
@@ -150,6 +161,10 @@ public class Controller {
     
     @FXML 
     private Separator separator1, separator2;
+    
+    private LineNumberHelper casTestsLineNumbers;
+    private LineNumberHelper tcasIncorrectLineNumbers; 
+    private LineNumberHelper tcasCorrectLineNumbers;
 
     // Existing UI component injections...
     private File currentCasTestsFile;
@@ -219,7 +234,16 @@ public class Controller {
         mainPane.widthProperty().addListener((obs, old, newVal) -> updateLayout());
         mainPane.heightProperty().addListener((obs, old, newVal) -> updateLayout());
         
-        // Initial layout
+        
+        casTestsLineNumbers = new LineNumberHelper(textAreaCasTests);
+        tcasIncorrectLineNumbers = new LineNumberHelper(textAreaTcasIncorrect);
+        tcasCorrectLineNumbers = new LineNumberHelper(textAreaTcasCorrect);
+        mainPane.getChildren().addAll(
+        	    casTestsLineNumbers.getLineNumbers(),
+        	    tcasIncorrectLineNumbers.getLineNumbers(),
+        	    tcasCorrectLineNumbers.getLineNumbers()
+        	);
+        
         updateLayout();
     }
 
@@ -228,6 +252,10 @@ public class Controller {
         menuBar.setLayoutY(0);
         menuBar.prefWidthProperty().bind(mainPane.widthProperty());
         
+        
+        textAreaTcasIncorrect.setWrapText(false);
+        textAreaTcasCorrect.setWrapText(false);
+        textAreaCasTests.setWrapText(false);
         // Tool bar fixed at bottom
         buttonContainer.setLayoutY(mainPane.getHeight() - buttonContainer.getHeight());
         buttonContainer.prefWidthProperty().bind(mainPane.widthProperty());
@@ -249,7 +277,7 @@ public class Controller {
         // Update text areas
         positionTextArea(textAreaCasTests, width * BUTTON_SPACING_PERCENT, height);
         positionTextArea(textAreaTcasIncorrect, width * (BUTTON_WIDTH_PERCENT + BUTTON_SPACING_PERCENT) + 15, height);
-        positionTextArea(textAreaTcasCorrect, width * (4*(BUTTON_WIDTH_PERCENT + BUTTON_SPACING_PERCENT)) + 15, height);
+        positionTextArea(textAreaTcasCorrect, width * (2.63*(BUTTON_WIDTH_PERCENT + BUTTON_SPACING_PERCENT)) + 15, height);
         
         // Update tool bar position
         buttonContainer.setLayoutY(height - buttonContainer.getHeight());
@@ -260,6 +288,38 @@ public class Controller {
         pf.setPrefWidth(mainPane.getWidth() * BUTTON_WIDTH_PERCENT3);
         classm.setPrefWidth(mainPane.getWidth() * BUTTON_WIDTH_PERCENT3);
         par.setPrefWidth(mainPane.getWidth() * BUTTON_WIDTH_PERCENT3);
+        
+        positionLineNumbers(casTestsLineNumbers.getLineNumbers(), 
+                        width * BUTTON_SPACING_PERCENT, height);
+       // casTestsLineNumbers.positionRelativeTo(textAreaCasTests);
+        positionLineNumbers(tcasIncorrectLineNumbers.getLineNumbers(),
+		                width * (BUTTON_WIDTH_PERCENT + BUTTON_SPACING_PERCENT) + 15, height);
+        //tcasIncorrectLineNumbers.positionRelativeTo(textAreaTcasIncorrect);
+		positionLineNumbers(tcasCorrectLineNumbers.getLineNumbers(),
+		                width * (2.63*(BUTTON_WIDTH_PERCENT + BUTTON_SPACING_PERCENT)) + 15, height);
+		//tcasCorrectLineNumbers.positionRelativeTo(textAreaTcasCorrect);
+    }
+    
+    private void positionLineNumbers(ListView<?> lineNumbers, double xPosition, double paneHeight) {
+        lineNumbers.setLayoutX(xPosition - 40);
+        lineNumbers.setLayoutY(30);
+        lineNumbers.setPrefHeight(paneHeight - buttonContainer.getHeight() - 30);
+        
+        // Only add to layout once
+        if (!mainPane.getChildren().contains(lineNumbers)) {
+            mainPane.getChildren().add(lineNumbers);
+        }
+        
+        // Keep visibility state (hidden by default)
+        lineNumbers.setVisible(false);
+    }
+
+    private void positionTextArea(TextArea textArea, double xPosition, double paneHeight) {
+        // Adjust text area position to account for line numbers
+        textArea.setLayoutX(xPosition);
+        textArea.setLayoutY(30);
+        textArea.setPrefWidth(mainPane.getWidth() * BUTTON_WIDTH_PERCENT - 45); // Reduce width
+        textArea.setPrefHeight(paneHeight - buttonContainer.getHeight() - 30);
     }
 
     private void positionButton(Button button, double xPosition) {
@@ -275,12 +335,12 @@ public class Controller {
         separator.setPrefHeight(paneHeight);
     }
 
-    private void positionTextArea(TextArea textArea, double xPosition, double paneHeight) {
+   /* private void positionTextArea(TextArea textArea, double xPosition, double paneHeight) {
         textArea.setLayoutX(xPosition);
         textArea.setLayoutY(30);
         textArea.setPrefWidth(mainPane.getWidth() * BUTTON_WIDTH_PERCENT);
         textArea.setPrefHeight(paneHeight - buttonContainer.getHeight() - 30);
-    }
+    }*/
 
     private Object handleAbout() {
 		// TODO Auto-generated method stub
@@ -324,7 +384,7 @@ public class Controller {
         if (showUnsavedChangesAlert()) {
             resetAllTextAreas();
             showAllButtons();
-            if (SEPARATOR_POSITION_2 == 0.9) {
+            if (SEPARATOR_POSITION_2 == 0.87) {
             	SEPARATOR_POSITION_2 = 0.66;
             	separator2.setLayoutX(mainPane.getWidth() * SEPARATOR_POSITION_2 + 5);
             }
@@ -667,6 +727,9 @@ public class Controller {
         textAreaTcasIncorrect.setVisible(false);
         textAreaTcasCorrect.clear();
         textAreaTcasCorrect.setVisible(false);
+        casTestsLineNumbers.hide();
+        tcasIncorrectLineNumbers.hide();
+        tcasCorrectLineNumbers.hide();
     }
 
     private void showAllButtons() {
@@ -707,6 +770,7 @@ public class Controller {
     }
 
     //handle file selection
+ // Modified handleFileSelection method with file saving logic
     private void handleFileSelection(Button button, TextArea textArea) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select a File");
@@ -721,54 +785,467 @@ public class Controller {
                 // Read file content
                 String content = Files.readString(selectedFile.toPath(), StandardCharsets.UTF_8);
 
-                // Hide the button and show the TextArea with the content
+                // Determine target file name based on button
+                String fileName;
+                if (button == buttonCasTests) {
+                    fileName = "cas-tests.txt";
+                } else if (button == buttonTcasIncorrect) {
+                    fileName = "tcas_Incorrect.c";
+                } else if (button == buttonTcasCorrect) {
+                    fileName = "tcas_Correct.c";
+                } else {
+                    throw new IllegalArgumentException("Unknown button type");
+                }
+
+                // Create target directory if it doesn't exist
+                Path targetDir = Paths.get("src", "packages");
+                if (!Files.exists(targetDir)) {
+                    Files.createDirectories(targetDir);
+                }
+
+                // Save file to target directory
+                Path targetPath = targetDir.resolve(fileName);
+                Files.write(targetPath, content.getBytes(StandardCharsets.UTF_8));
+
+                // Update UI elements
                 button.setVisible(false);
                 if (button != buttonTcasCorrect) {
-                	textArea.setText(content);
+                    textArea.setText(content);
                 } else {
-                	SEPARATOR_POSITION_2 = 0.9;
-                	separator2.setLayoutX(mainPane.getWidth() * SEPARATOR_POSITION_2);
+                    SEPARATOR_POSITION_2 = 0.87;
+                    separator2.setLayoutX(mainPane.getWidth() * SEPARATOR_POSITION_2);
+                    textAreaTcasIncorrect.setPrefWidth(textAreaTcasIncorrect.getWidth()*1.9);
                 }
                 textArea.setVisible(true);
+
             } catch (IOException e) {
                 e.printStackTrace();
-                textArea.setText("Error reading file.");
+                textArea.setText("Error reading/saving file.");
+                textArea.setVisible(true);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+                textArea.setText("Invalid button configuration.");
                 textArea.setVisible(true);
             }
         }
+        
+        getHelperForTextArea(textArea).show();
+        LineNumberHelper helper = getHelperForTextArea(textArea);
+        if (helper != null) {
+            helper.getLineNumbers().setVisible(!button.isVisible());
+        }
     }
+    
+    private LineNumberHelper getHelperForTextArea(TextArea textArea) {
+        if (textArea == textAreaCasTests) return casTestsLineNumbers;
+        if (textArea == textAreaTcasIncorrect) return tcasIncorrectLineNumbers;
+        if (textArea == textAreaTcasCorrect) return tcasCorrectLineNumbers;
+        return null;
+    }
+    
+
+    private void displayCSV(String csvFile) {
+        try {
+            String content = Files.readString(Paths.get(csvFile));
+            buttonTcasCorrect.setVisible(false);
+            textAreaTcasCorrect.setVisible(true);
+            textAreaTcasCorrect.setText(content);
+        } catch (IOException e) {
+            showAlert("Error", "Could not read " + csvFile, Alert.AlertType.ERROR);
+        }
+    }
+    
+ // Unified runTask implementation
+    private void runTask(Supplier<String> task, Consumer<String> onSuccess, Consumer<Exception> onError) {
+        new Thread(() -> {
+            try {
+                String result = task.get();
+                Platform.runLater(() -> onSuccess.accept(result));
+            } catch (Exception e) {
+                Platform.runLater(() -> onError.accept(e));
+            }
+        }).start();
+    }
+
     @FXML
     private void calculateTrantula() {
-    	//TO-Do
-    	//textAreaTcasCorrect.setText(content);
+        runTask(
+            () -> {
+                if (!Files.exists(Paths.get("src/packages/parametres.csv"))) {
+                	categorize();
+                }
+                return "Parameters verified";
+            },
+            result -> {
+                runTask(
+                    () -> {
+                        try {
+							SuspiciousnessCalculator.calculate("Tarantula");
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+                        try {
+							return loadCSV("Tarantula.csv");
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						return result;
+                    },
+                    content -> textAreaTcasCorrect.setText(content),
+                    error -> showAlert("Tarantula Error", error.getMessage(), Alert.AlertType.ERROR)
+                );
+            },
+            error -> showAlert("Parameter Error", "Failed to verify parameters: " + error.getMessage(), Alert.AlertType.ERROR)
+        );
     }
+
     @FXML
     private void calculateOchiai() {
-    	//TO-Do
-    	//textAreaTcasCorrect.setText(content);
+        runTask(
+            () -> {
+                if (!Files.exists(Paths.get("src/packages/parametres.csv"))) {
+                	categorize();
+                }
+                return "Parameters verified";
+            },
+            result -> {
+                runTask(
+                    () -> {
+                        try {
+							SuspiciousnessCalculator.calculate("Ochiai");
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+                        try {
+							return loadCSV("Ochiai.csv");
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						return result;
+                    },
+                    content -> textAreaTcasCorrect.setText(content),
+                    error -> showAlert("Ochiai Error", error.getMessage(), Alert.AlertType.ERROR)
+                );
+            },
+            error -> showAlert("Parameter Error", "Failed to verify parameters: " + error.getMessage(), Alert.AlertType.ERROR)
+        );
     }
+
     @FXML
     private void calculateZoltar() {
-    	//TO-Do
-    	//textAreaTcasCorrect.setText(content);
+        runTask(
+            () -> {
+                if (!Files.exists(Paths.get("src/packages/parametres.csv"))) {
+                    categorize();
+                }
+                return "Parameters verified";
+            },
+            result -> {
+                runTask(
+                    () -> {
+                        try {
+							SuspiciousnessCalculator.calculate("Zoltar");
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+                        try {
+							return loadCSV("Zoltar.csv");
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						return result;
+                    },
+                    content -> textAreaTcasCorrect.setText(content),
+                    error -> showAlert("Zoltar Error", error.getMessage(), Alert.AlertType.ERROR)
+                );
+            },
+            error -> showAlert("Parameter Error", "Failed to verify parameters: " + error.getMessage(), Alert.AlertType.ERROR)
+        );
     }
+
     @FXML
     private void calculateJaccard() {
-    	//TO-Do
-    	//textAreaTcasCorrect.setText(content);
+        runTask(
+            () -> {
+                if (!Files.exists(Paths.get("src/packages/parametres.csv"))) {
+                    categorize();
+                }
+                return "Parameters verified";
+            },
+            result -> {
+                runTask(
+                    () -> {
+                        try {
+							SuspiciousnessCalculator.calculate("Jaccard");
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+                        try {
+							return loadCSV("Jaccard.csv");
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						return result;
+                    },
+                    content -> textAreaTcasCorrect.setText(content),
+                    error -> showAlert("Jaccard Error", error.getMessage(), Alert.AlertType.ERROR)
+                );
+            },
+            error -> showAlert("Parameter Error", "Failed to verify parameters: " + error.getMessage(), Alert.AlertType.ERROR)
+        );
     }
     @FXML
     private void categorize_test_cases() {
     	//TO-Do
     }
+    
+    @FXML
+    private TextArea classTextArea; // TextArea for Class.fxml
+    
+ // In your Controller class
+ // In your Controller class
     @FXML
     private void display_class() {
-    	//TO-Do
+        runTask(
+            () -> {
+                // 1. Ensure parameters exist
+                if (!Files.exists(Path.of("src/packages/parametres.csv"))) {
+                	// Step 1: Run categorization script
+                    //ScriptRunner.runCategorizer();
+                	// Step 2: Generate test results
+                    try {
+						TestResultGenerator.generateResults();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+                    
+                    // Step 3: Generate parameters
+                    try {
+						ParameterGenerator.generateParameters();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+                }
+                
+                // 2. Generate missing formulas quietly
+                generateMissingFormulas();
+                
+                // 3. Generate classements for existing files
+                try {
+					ClassementGenerator.generateAllClassements();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+                
+                // Verify at least one classement exists
+                Path classementDir = Path.of("src/packages/classements/");
+                try (DirectoryStream<Path> stream = Files.newDirectoryStream(classementDir, "*.csv")) {
+                    if (!stream.iterator().hasNext()) {
+                        throw new IOException("No classement files generated. Generate formulas first!");
+                    }
+                } catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+                return "Classement files ready";
+            },
+            result -> showClassementWindow(),
+            error -> showAlert("Classement Error", 
+                "Failed to generate rankings:\n" + error.getMessage() + 
+                "\n\nMake sure you:\n1. Have generated parameters\n" + 
+                "2. Calculated at least one formula", 
+                Alert.AlertType.ERROR)
+        );
     }
+
+    private void generateMissingFormulas() {
+        String[] formulas = {"Ochiai", "Tarantula", "Jaccard", "Zoltar"};
+        for (String formula : formulas) {
+            Path formulaFile = Path.of("src/packages/" + formula + ".csv");
+            if (!Files.exists(formulaFile)) {
+                try {
+                    SuspiciousnessCalculator.calculate(formula);
+                } catch (Exception e) {
+                    System.err.println("Failed to generate " + formula + ": " + e.getMessage());
+                }
+            }
+        }
+    }
+
+    private void showClassementWindow() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/class.fxml"));
+            Parent root = loader.load();
+            ClassementController controller = loader.getController();
+            
+            // Load all classement files
+            Map<String, String> classements = new LinkedHashMap<>();
+            String[] methods = {"Ochiai", "Tarantula", "Jaccard", "Zoltar"};
+            
+            for (String method : methods) {
+                Path path = Path.of("src/packages/classements/" + method + "_classement.csv");
+                if (Files.exists(path)) {
+                    classements.put(method, Files.readString(path));
+                }
+            }
+
+            Stage stage = new Stage();
+            stage.setTitle("Classement Rankings");
+            stage.setScene(new Scene(root, 800, 250));
+            
+            Platform.runLater(() -> {
+                controller.initializeTabs(classements);
+                stage.show();
+            });
+        } catch (IOException e) {
+            showAlert("Error", "Failed to display classements: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    
+    @FXML
+    private TextArea textArea;
+ // In your Controller class
+
     @FXML
     private void display_para() {
-    	//TO-Do
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/parametres.fxml"));
+            Parent root = loader.load();
+            ParametersController paraController = loader.getController();
+
+            Stage stage = new Stage();
+            stage.setTitle("Parameters");
+            stage.setScene(new Scene(root));
+
+            runTask(() -> {
+                if (!Files.exists(Paths.get("src/packages/parametres.csv"))) {
+                	// Step 1: Run categorization script
+                    //ScriptRunner.runCategorizer();
+                	// Step 2: Generate test results
+                    TestResultGenerator.generateResults();
+                    
+                    // Step 3: Generate parameters
+                    ParameterGenerator.generateParameters();
+                    return parseParameters();
+                }
+                return parseParameters();
+            }, 
+            parameters -> {
+                paraController.setParameters(parameters);
+                stage.show();
+            }, 
+            "Failed to load parameters");
+            
+        } catch (IOException e) {
+            showAlert("Error", "Window initialization failed: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    private ObservableList<ParameterEntry> parseParameters() throws IOException {
+        ObservableList<ParameterEntry> data = FXCollections.observableArrayList();
+        List<String> lines = Files.readAllLines(Paths.get("src/packages/parametres.csv"));
+        
+        for (String line : lines) {
+            String[] values = line.split(",");
+            if (values.length == 4) {
+                data.add(new ParameterEntry(
+                    Integer.parseInt(values[0].trim()),
+                    Integer.parseInt(values[1].trim()),
+                    Integer.parseInt(values[2].trim()),
+                    Integer.parseInt(values[3].trim())
+                ));
+            }
+        }
+        return data;
+    }
+
+    // Generic runTask implementation with error handling
+    private <T> void runTask(Callable<T> task, Consumer<T> onSuccess, String errorMessage) {
+        new Thread(() -> {
+            try {
+                T result = task.call();
+                Platform.runLater(() -> onSuccess.accept(result));
+            } catch (Exception e) {
+                Platform.runLater(() -> 
+                    showAlert("Error", errorMessage + ": " + e.getMessage(), Alert.AlertType.ERROR));
+            }
+        }).start();
+    }
+    
+//====== Core Methods ======//
+    private void categorize() { // Renamed to follow Java conventions
+        runTask(
+            () -> {
+                // Step 1: Run categorization script
+                //ScriptRunner.runCategorizer();
+                
+                // Step 2: Generate test results
+                try {
+					TestResultGenerator.generateResults();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+                
+                // Step 3: Generate parameters
+                try {
+					ParameterGenerator.generateParameters();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+                
+                return "Categorization completed successfully"; // Return status message
+            },
+            result -> {
+                // Update UI after successful generation
+                textAreaTcasCorrect.setText(result);
+                textAreaTcasCorrect.setVisible(true);
+                
+                // Now display the generated files
+                //displayGeneratedFiles();
+            },
+            error -> {
+                textAreaTcasCorrect.setText("Error: " + error.getMessage());
+                textAreaTcasCorrect.setVisible(true);
+            }
+        );
+    }
+
+    private void displayGeneratedFiles() {
+        try {
+            String content = Files.readString(Path.of("src/packages/parametres.csv"));
+            textAreaTcasCorrect.setText(content);
+        } catch (IOException e) {
+            showAlert("Error", "Failed to display files: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    private String loadCSV(String filename) throws IOException {
+        StringBuilder content = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(
+            new FileReader("src/packages/" + filename))) {
+            String line;
+            while ((line = reader.readLine()) != null) content.append(line).append("\n");
+        }
+        return content.toString();
+    }
+    
+
+    @FunctionalInterface
+    private interface TaskHandler {
+        String execute() throws Exception;
     }
 }
-
-

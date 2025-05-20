@@ -1,0 +1,30 @@
+.root {
+	-fx-background-color: #fff8f0;
+}
+.list-cell {
+    -fx-padding: 10px;
+    -fx-background-color: #f8f9fa;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.list-cell:odd {
+    -fx-background-color: #ffffff;
+}
+
+.list-cell:filled:hover {
+    -fx-background-color: #e9ecef;
+}
+
+.header-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+    -fx-padding: 0 0 10px 0;
+}
+
+.ranking-cell {
+    -fx-font-family: monospace;
+    -fx-font-size: 12px;
+    -fx-padding: 8px;
+}

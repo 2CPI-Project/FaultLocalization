@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+
+<TabPane xmlns="http://javafx.com/javafx"
+         xmlns:fx="http://javafx.com/fxml"
+         fx:controller="application.ClassementController"
+         stylesheets="@application/classement-style.css"
+         fx:id="tabPane"
+         styleClass="root"
+         tabClosingPolicy="UNAVAILABLE"
+         prefWidth="800"
+         prefHeight="250">
+</TabPane>

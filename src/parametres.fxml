@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="application.ParametersController"
+      stylesheets="@application/application.css"
+      spacing="10"
+      prefHeight="250" 
+      prefWidth="400"
+      style="-fx-padding: 10;">
+
+    <Label text="Parameters" style="-fx-font-weight: bold; -fx-font-size: 16;"/>
+    
+    <TableView fx:id="paramTable" prefHeight="350">
+        <columns>
+            <TableColumn text="EP" prefWidth="100" fx:id="epColumn"/>
+            <TableColumn text="EF" prefWidth="100" fx:id="efColumn"/>
+            <TableColumn text="NP" prefWidth="100" fx:id="npColumn"/>
+            <TableColumn text="NF" prefWidth="100" fx:id="nfColumn"/>
+        </columns>
+    </TableView>
+</VBox>
